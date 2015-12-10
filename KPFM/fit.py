@@ -9,30 +9,31 @@ def fit_freq(file_path,begin=None,end=None):
         with open(file_path) as f:
             temp = f.readlines()
         header = 0
-        print temp
+        #print temp
         for line in temp:
-            print line
+            #print line
             match = re.search(r'DATA',line)
-            print match
+            #print match
             if match:
                 header = header + 1
                 break
             else:
                 header = header + 1
-            print header
-        print 'header', header
+            #print header
+        #print 'header', header
         data = pd.read_csv(file_path,sep='\t',skiprows=header)
         bias = data['Bias calc (V)']
         freq = data['Frequency Shift (Hz)']
         data_size = bias.size
-        print data_size
+        #print data_size
         if begin == None:
             begin = 0
         if end == None:
             end = data_size
-        print begin, end
+        #print begin, end
         z = np.polyfit(bias[begin:end], freq[begin:end], 2)
-        return z
+        x0 = -z[1]/(2*z[0])
+        return z,x0
 
 
 if __name__ == '__main__':
