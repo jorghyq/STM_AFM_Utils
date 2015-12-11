@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import re
 
-def fit_freq(file_path,begin=None,end=None):
+def fit_freq(file_path,begin=None,end=None,ERROR_OUT=False):
     if os.path.isfile(file_path):
         with open(file_path) as f:
             temp = f.readlines()
@@ -33,9 +33,15 @@ def fit_freq(file_path,begin=None,end=None):
         #print begin, end
         z = np.polyfit(bias[begin:end], freq[begin:end], 2)
         x0 = -z[1]/(2*z[0])
-        return z,x0
+        if ERROR_OUT:
+            freq_fit = bias*bias*z[0]+bias*z[1]+z[2]
+            error = abs(freq_fit[begin:end]-freq[begin:end]).sum()/(end-begin)
+            return z,x0,error
+        else:
+            return z,x0
 
 
 if __name__ == '__main__':
     file_path = './test/KPFM013.dat'
-    z = fit_freq(file_path,None,None)
+    z,x0,e = fit_freq(file_path,None,None,1)
+    print z,x0,e
