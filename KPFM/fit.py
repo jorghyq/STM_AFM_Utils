@@ -20,10 +20,13 @@ def fit_freq(file_path,begin=None,end=None,ERROR_OUT=False):
             else:
                 header = header + 1
             #print header
+            match_height = re.search(r'Current \(A\)',line)
+            if match_height:
+                z_set = float(line.split('\t')[-2].strip())
         #print 'header', header
         data = pd.read_csv(file_path,sep='\t',skiprows=header)
         bias = data['Bias calc (V)']
-        freq = data['Frequency Shift (Hz)']
+        freq = data['Frequency Shift [AVG] (Hz)']
         data_size = bias.size
         #print data_size
         if begin == None:
@@ -36,12 +39,12 @@ def fit_freq(file_path,begin=None,end=None,ERROR_OUT=False):
         if ERROR_OUT:
             freq_fit = bias*bias*z[0]+bias*z[1]+z[2]
             error = abs(freq_fit[begin:end]-freq[begin:end]).sum()/(end-begin)
-            return z,x0,error
+            return z,x0,error,z_set
         else:
-            return z,x0
+            return z,x0,z_set
 
 
 if __name__ == '__main__':
     file_path = './test/KPFM013.dat'
-    z,x0,e = fit_freq(file_path,None,None,1)
-    print z,x0,e
+    z,x0,e,z_set = fit_freq(file_path,None,None,1)
+    print z,x0,e,z_set

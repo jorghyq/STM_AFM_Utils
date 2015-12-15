@@ -3,3 +3,4 @@
 *.sxm
 test
 .ipynb_checkpoints
+*.png
